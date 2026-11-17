@@ -11,6 +11,9 @@ export const ICE_SERVERS = [
   {
     urls: import.meta.env.VITE_STUN_URL || 'stun:stun.l.google.com:19302',
   },
+  {
+    urls: 'stun:stun.cloudflare.com:3478',
+  },
 ];
 
 /**
@@ -24,7 +27,12 @@ export async function refreshTurnCredentials() {
     if (!res.ok) return ICE_SERVERS;
     const data = await res.json();
     if (Array.isArray(data?.iceServers) && data.iceServers.length > 0) {
-      ICE_SERVERS.splice(0, ICE_SERVERS.length, ...data.iceServers);
+      ICE_SERVERS.splice(
+        0,
+        ICE_SERVERS.length,
+        ...data.iceServers,
+        { urls: 'stun:stun.cloudflare.com:3478' }
+      );
     }
   } catch {
     // Fallback ke STUN default jika server belum terjangkau

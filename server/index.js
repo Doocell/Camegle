@@ -11,6 +11,7 @@ import { registerChatHandlers } from './modules/chat/index.js';
 import { registerReportHandlers, registerAdminReportRoutes } from './modules/report/index.js';
 import { registerGuardHandlers } from './modules/guard/index.js';
 import { generateTurnCredentials } from './shared/turn.js';
+import { createRealtimeHub } from './shared/realtime.js';
 
 const PORT = process.env.PORT || 3001;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || true;
@@ -27,6 +28,26 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/turn-credentials', (_req, res) => {
   const credentials = generateTurnCredentials();
   res.json(credentials);
+});
+
+// HTTP Polling Realtime Fallback (untuk Vercel Serverless tanpa WebSocket)
+const realtimeHub = createRealtimeHub((hubIo, hubSocket) => {
+  registerGuardHandlers(hubIo, hubSocket);
+  registerMatchingHandlers(hubIo, hubSocket);
+  registerSignalingHandlers(hubIo, hubSocket);
+  registerChatHandlers(hubIo, hubSocket);
+  registerReportHandlers(hubIo, hubSocket);
+});
+
+app.post('/api/realtime/poll', (req, res) => {
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip =
+    (typeof forwarded === 'string' && forwarded.split(',')[0].trim()) ||
+    req.socket?.remoteAddress ||
+    '127.0.0.1';
+  const { clientId, events, leave } = req.body || {};
+  const result = realtimeHub.handlePoll({ clientId, ip, events, leave });
+  res.json(result);
 });
 
 registerAdminReportRoutes(app);
