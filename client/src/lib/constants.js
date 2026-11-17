@@ -1,8 +1,11 @@
 /**
  * Konstanta Global Client (PRD Bagian 4 & F10 Dynamic TURN Credentials)
+ * Di produksi (Vercel Services dengan shared domain rewrites), jika VITE_SOCKET_URL kosong,
+ * gunakan same-origin ('') agar request menuju /api/* dan /socket.io/* pada domain yang sama.
  */
 
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+export const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL || (import.meta.env?.DEV ? 'http://localhost:3001' : '');
 
 export const ICE_SERVERS = [
   {

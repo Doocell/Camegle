@@ -13,7 +13,10 @@ const isTestEnv =
   process.execArgv.some((arg) => arg.includes('--test')) ||
   process.argv.some((arg) => arg.endsWith('.test.js'));
 
-const dbPath = isTestEnv ? ':memory:' : process.env.DB_PATH || './data/camelgle.sqlite';
+const defaultFileDbPath = process.env.VERCEL
+  ? '/tmp/camelgle.sqlite'
+  : './data/camelgle.sqlite';
+const dbPath = isTestEnv ? ':memory:' : process.env.DB_PATH || defaultFileDbPath;
 
 if (dbPath !== ':memory:') {
   const resolvedDir = path.dirname(path.resolve(dbPath));

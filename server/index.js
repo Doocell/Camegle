@@ -13,10 +13,10 @@ import { registerGuardHandlers } from './modules/guard/index.js';
 import { generateTurnCredentials } from './shared/turn.js';
 
 const PORT = process.env.PORT || 3001;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || true;
 
 const app = express();
-app.use(cors({ origin: CLIENT_ORIGIN }));
+app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '2mb' }));
 
 // Health check, TURN dynamic credentials (F10), & Admin Report API endpoints (F7)
@@ -62,6 +62,11 @@ io.on('connection', (socket) => {
   });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`🐪 Camelgle Server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  httpServer.listen(PORT, () => {
+    console.log(`🐪 Camelgle Server running on http://localhost:${PORT}`);
+  });
+}
+
+export { app, httpServer, io };
+export default app;

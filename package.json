@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "description": "Camelgle Fullstack WebRTC Random Video Chat (Client + Server)",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev:server": "npm --prefix server run dev",
     "dev:client": "npm --prefix client run dev",

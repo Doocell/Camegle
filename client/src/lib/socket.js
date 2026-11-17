@@ -5,7 +5,8 @@ import { SOCKET_URL } from './constants.js';
  * Satu-satunya instance Socket.io di sisi client (Aturan Wajib #5 PRD).
  * Dipakai bersama oleh seluruh fitur (matching, call, chat, report, guard).
  */
-export const socket = io(SOCKET_URL, {
+export const socket = io(SOCKET_URL || undefined, {
+  path: '/socket.io',
   autoConnect: true,
   reconnection: true,
   reconnectionAttempts: 10,
