@@ -31,9 +31,21 @@ export function usePeerConnection({ roomId, isInitiator, localStream, onFail }) 
     const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
     const incomingStream = new MediaStream();
 
-    // Pasang seluruh track lokal (video + audio) ke PeerConnection
+    // Pasang seluruh track lokal (video + audio) ke PeerConnection dengan bitrate HD (720p/1080p)
     localStream.getTracks().forEach((track) => {
-      pc.addTrack(track, localStream);
+      const sender = pc.addTrack(track, localStream);
+      if (track.kind === 'video' && typeof sender?.getParameters === 'function') {
+        try {
+          const params = sender.getParameters();
+          if (!params.encodings || params.encodings.length === 0) {
+            params.encodings = [{}];
+          }
+          params.encodings[0].maxBitrate = 2500000; // 2.5 Mbps untuk kualitas 720p/1080p tajam
+          sender.setParameters(params).catch(() => {});
+        } catch {
+          // Abaikan jika browser tidak mendukung setParameters
+        }
+      }
     });
 
     // Terima track dari lawan bicara

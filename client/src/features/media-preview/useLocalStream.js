@@ -36,8 +36,9 @@ export function useLocalStream() {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
+          width: { ideal: 1920, min: 640 },
+          height: { ideal: 1080, min: 480 },
+          frameRate: { ideal: 30, max: 60 },
           facingMode: 'user',
         },
         audio: {

@@ -20,13 +20,27 @@ export default function VideoCall({
   const localVideoRef = useRef(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isLocalMirrored, setIsLocalMirrored] = useState(true);
+  const [remoteResolution, setRemoteResolution] = useState('HD');
 
   // Pasang remoteStream ke elemen <video> utama
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
+    } else {
+      setRemoteResolution('HD');
     }
   }, [remoteStream, remoteVideoRef]);
+
+  const handleRemoteVideoResize = () => {
+    const h = remoteVideoRef.current?.videoHeight || 0;
+    if (h >= 1080) {
+      setRemoteResolution('1080p');
+    } else if (h >= 720) {
+      setRemoteResolution('720p');
+    } else if (h > 0) {
+      setRemoteResolution(`${h}p`);
+    }
+  };
 
   // Pasang localStream ke elemen <video> PiP
   useEffect(() => {
@@ -63,6 +77,8 @@ export default function VideoCall({
             ref={remoteVideoRef}
             autoPlay
             playsInline
+            onLoadedMetadata={handleRemoteVideoResize}
+            onResize={handleRemoteVideoResize}
             className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${
               shouldBlurRemote ? 'sand-blur' : ''
             }`}
@@ -123,7 +139,7 @@ export default function VideoCall({
           {/* Resolution / Network Pill */}
           <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#2A1E18]/70 backdrop-blur-sm text-[#ffb599]">
             <span className="material-symbols-outlined text-[16px]">signal_cellular_alt</span>
-            <span className="font-label-sm text-label-sm">480p • P2P</span>
+            <span className="font-label-sm text-label-sm">{remoteResolution} • P2P</span>
           </div>
         </div>
 
