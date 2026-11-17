@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+dist/
+client/dist/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+server/.env
+client/.env
+
+# SQLite Database & runtime data
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+server/data/
+data/
+
+# Local AI / MCP configuration containing API keys
+.mcp.json
+.vscode/mcp.json
+.agents/
+
+# Logs & OS files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
